@@ -1,10 +1,32 @@
-local library = loadstring(game:HttpGet('https://raw.githubusercontent.com/cypherdh/VanisUILIB/main/.gitignore'))()
+-- Credits To The Original Devs @xz, @goof
+getgenv().Config = {
+	Invite = "informant.wtf",
+	Version = "0.0",
+}
 
-local Window = library:CreateWindow("Roblox ESP", "v1.0", 10044538000)
+getgenv().luaguardvars = {
+	DiscordName = "username#0000",
+}
 
-local Tab = Window:CreateTab("Configurações")
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/drillygzzly/Other/main/1"))()
 
-local Page = Tab:CreateFrame("Opções")
+library:init() -- Inicializa a biblioteca, não delete isso
+
+local Window = library.NewWindow({
+	title = "Informant.Wtf",
+	size = UDim2.new(0, 525, 0, 650)
+})
+
+local tabs = {
+    Tab1 = Window:AddTab("Tab1"),
+	Settings = library:CreateSettingsTab(Window),
+}
+
+-- Adicionando uma seção para o destaque de jogadores
+local sections = {
+	Section1 = tabs.Tab1:AddSection("ESP Settings", 1),
+	HighlightSection = tabs.Tab1:AddSection("Highlight Players", 2), -- Nova seção para o destaque
+}
 
 local highlighting = false
 local highlightColor = Color3.new(1, 0, 0) -- Cor padrão para destaque (vermelho)
@@ -30,54 +52,51 @@ local function HighlightAllPlayers(color)
     end
 end
 
--- Botão para destacar todos os jogadores
-local HighlightButton = Page:CreateButton("Highlight All Players", "Destaca todos os jogadores no jogo", function()
-    if not highlighting then
-        highlighting = true
-        HighlightAllPlayers(highlightColor)
-    else
-        highlighting = false
-        -- Remover todos os efeitos de destaque se desativar
-        for _, player in pairs(game.Players:GetPlayers()) do
-            local character = player.Character
-            if character then
-                for _, obj in ipairs(character:GetChildren()) do
-                    if obj:IsA("PointLight") then
-                        obj:Destroy()
-                    end
-                end
-            end
-        end
-    end
-end)
+-- Botão para iniciar/parar o destaque de jogadores
+local HighlightButton = sections.HighlightSection:AddButton({
+	enabled = true,
+	text = "Highlight Players",
+	flag = "HighlightPlayers",
+	tooltip = "Highlights all players in the game",
+	risky = false,
+	confirm = false,
+	callback = function()
+	    if not highlighting then
+	        highlighting = true
+	        HighlightAllPlayers(highlightColor)
+	    else
+	        highlighting = false
+	        -- Remover todos os efeitos de destaque se desativar
+	        for _, player in pairs(game.Players:GetPlayers()) do
+	            local character = player.Character
+	            if character then
+	                for _, obj in ipairs(character:GetChildren()) do
+	                    if obj:IsA("PointLight") then
+	                        obj:Destroy()
+	                    end
+	                end
+	            end
+	        end
+	    end
+	end
+})
 
 -- Seletor de cor para o destaque
-local ColorPicker = Page:CreateColorPicker("Highlight Color", highlightColor, function(color)
-    highlightColor = color
-    -- Atualizar a cor para o destaque se estiver ativado
-    if highlighting then
-        HighlightAllPlayers(highlightColor)
+local ColorPicker = sections.HighlightSection:AddColor({
+    enabled = true,
+    text = "Highlight Color",
+    flag = "HighlightColor",
+    tooltip = "Select highlight color",
+    color = highlightColor,
+    trans = 0,
+    open = false,
+    callback = function(color)
+        highlightColor = color
+        -- Atualizar a cor para o destaque se estiver ativado
+        if highlighting then
+            HighlightAllPlayers(highlightColor)
+        end
     end
-end)
+})
 
--- Exemplo de outras funcionalidades da UI LIB
-Page:CreateToggle("Toggle", "Descrição do Toggle", function(arg)
-    print("Valor do Toggle:", arg)
-end)
-
-Page:CreateBind("KeyBind", "F", function(arg)
-    print("Tecla Bind:", arg)
-end)
-
-Page:CreateBox("TextBox", "Texto Padrão", function(arg)
-    print("Valor da TextBox:", arg)
-end)
-
-Page:CreateSlider("Slider", 0, 100, function(arg)
-    print("Valor do Slider:", arg)
-end)
-
-local Label = Page:CreateLabel("Label")
-Label:UpdateLabel("Novo Título")
-
--- Exemplo de como você poderia criar mais elementos na interface, como labels, sliders, etc.
+library:SendNotification("Notification", 5, Color3.new(255, 0, 0)) -- Exemplo de notificação (opcional)
