@@ -75,17 +75,13 @@ HighlightSection:AddButton({
                 if character then
                     local humanoid = character:FindFirstChildOfClass("Humanoid")
                     if humanoid then
-                        -- Criar um efeito de destaque temporário
-                        local highlightEffect = Instance.new("SelectionBox")
-                        highlightEffect.Color3 = Color3.fromRGB(255, 255, 0)
-                        highlightEffect.LineThickness = 0.05
-                        highlightEffect.Adornee = character.PrimaryPart or character:FindFirstChild("HumanoidRootPart")
-                        highlightEffect.Parent = character
-
-                        table.insert(highlightedPlayers, {
-                            Player = player,
-                            HighlightEffect = highlightEffect
-                        })
+                        -- Create a SelectionBox to highlight the player's torso
+                        local highlightBox = Instance.new("SelectionBox")
+                        highlightBox.Adornee = character:WaitForChild("HumanoidRootPart")
+                        highlightBox.Color3 = Color3.new(0, 1, 0) -- Green color (you can adjust the color as needed)
+                        highlightBox.LineThickness = 0.05
+                        highlightBox.Parent = character
+                        table.insert(highlightedPlayers, highlightBox)
                     end
                 end
             end
@@ -93,12 +89,10 @@ HighlightSection:AddButton({
     end
 })
 
--- Desativa todos os efeitos de destaque
-local function clearHighlightedPlayers()
-    for _, info in ipairs(highlightedPlayers) do
-        if info.HighlightEffect and info.HighlightEffect.Parent then
-            info.HighlightEffect:Destroy()
-        end
+-- Function to remove all highlights
+local function clearHighlights()
+    for _, box in ipairs(highlightedPlayers) do
+        box:Destroy()
     end
     highlightedPlayers = {}
 end
@@ -106,7 +100,7 @@ end
 HighlightSection:AddButton({
     Name = "Clear Highlight",
     Callback = function()
-        clearHighlightedPlayers()
+        clearHighlights()
     end
 })
 -- Highlight Players Tab End --
