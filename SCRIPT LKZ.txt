@@ -43,6 +43,46 @@ PlayerSection:AddSlider({
     end
 })
 
+-- Adicione esta parte ao seu código existente
+
+-- Crie uma janela com uma aba ESP
+local ESPWindow = OrionLib:MakeWindow({
+    Name = "ESP",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "Orion"
+})
+
+-- Aba ESP
+local ESPTab = ESPWindow:MakeTab({
+    Name = "ESP",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+local ESPSection = ESPTab:AddSection({
+    Name = "ESP Settings"
+})
+
+-- Adicione um botão para ativar/desativar o ESP
+local ESPEnabled = false
+
+ESPSection:AddButton({
+    Name = "Toggle ESP",
+    Callback = function()
+        ESPEnabled = not ESPEnabled
+        -- Lógica para ativar/desativar o ESP aqui
+        if ESPEnabled then
+            print("ESP ativado!")
+            -- Adicione o código para destacar os elementos desejados
+        else
+            print("ESP desativado!")
+            -- Remova o destaque dos elementos
+        end
+    end
+})
+
+
 -- Aba de Configurações
 local SettingsTab = Window:MakeTab({
     Name = "Settings",
