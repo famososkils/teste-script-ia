@@ -1,87 +1,104 @@
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/GhostDuckyy/UI-Libraries/main/Neverlose/source.lua"))()
--- Toggle UI: Library:Toggle()
+local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/cueshut/saves/main/compact"))()
+UI = UI.init("Showcase", "v1.0.0", "SHOWCASE")
 
-local Window = Library:Window({
-    text = "Window"
+local AimOne, AimTwo = UI:AddTab("Aim", "Silent Aim") do
+local Section = AimOne:AddSeperator("Silent Aim") do
+local masterToggle = Section:AddToggle({
+title = "Enabled",
+desc = "This is a small tip which will appear when the user hovers over this toggle. It works on all elements",
+callback = function(state)
+print("Toggled: ", state)
+end
 })
 
-local TabSection = Window:TabSection({
-    text = "TabSection"
+local fovToggle, fovColor
+fovToggle, fovColor = Section:AddToggle({
+title = "Display field of view",
+checked = true,
+callback = function(state)
+print("FOV display toggled", state)
+print("FOV color", fovToggle.colorpicker.getColor(), fovColor.getColor())
+print("silent aim enabled", masterToggle.getToggled())
+
+fovColor.setColor(Color3.new(0,1,0))
+end,
+colorpicker = {
+default = Color3.new(0,0.5,1),
+callback = function(color)
+print("New FOV color selected: ", color)
+end
+}
 })
 
-local Tab = TabSection:Tab({
-    text = "Tab",
-    icon = "rbxassetid://7999345313",
+
+local slider = Section:AddSlider({
+title = "Field of view",
+values = {min=0,max=250,default=50},
+callback = function(set)
+print("FOV has been set to: ", set)
+end,
 })
 
-local Section = Tab:Section({
-    text = "Section"
+Section:AddToggle({
+title = "Test slider return",
+callback = function()
+print(slider.getValue())
+slider.setPercent(0.8) --DESPITE "setPercent" IT EXPECTS VALUE 0-1. 80% of 250
+wait(3)
+slider.setValue(75) --set literally to 75
+end
 })
 
-Section:Button({
-    text = "Button",
-    callback = function()
-        print("Clicked button")
-    end,
+local bodyparts = { "Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Arm" }
+local selection = Section:AddSelection({
+title = "Bodyparts",
+options = bodyparts,
+callback = function(selected)
+print("Selected the following:")
+for _,i in pairs(selected) do print(" -", bodyparts[i]) end
+end
 })
 
-Section:Toggle({
-    text = "Toggle",
-    state = false, -- Default boolean
-    callback = function(boolean)
-        print("Toggle current: ",boolean)
-    end
+Section:AddToggle({
+title = "Test selection",
+callback = function()
+print("Currently selected: ")
+for _,i in pairs(selection.getSelected()) do print(" -", i) end
+selection.setDropdownExpanded(true)
+wait(1)
+selection.setSelected({1,2,5}) --head, torso, left leg
+wait(2)
+selection.setOptions({"carrot", "rhubarb", "olive"})
+
+end
+})
+end
+local Section = AimTwo:AddSeperator("Tuning") do
+   Section:AddToggle({
+       title = "Do tuning"
+   })
+
+local fruit = {"lime", "lemon", "mango", "nut"}
+local dropdown = Section:AddDropdown({
+title = "Demonstrative dropdown",
+options = fruit,
+callback = function(selected, actual) --selected = the index of the item in the "options" list. Actual = its actual text
+print(selected, fruit[selected], actual)
+end
 })
 
-Section:Slider({
-    text = "Slider",
-    min = 10,
-    max = 100,
-    -- [[Float = 0,]] Idk what it does
-    callback = function(number)
-        print(number)
-    end
-})
+Section:AddToggle({
+title = "Test dropdown",
+callback = function()
+print("Selected", dropdown.getSelected())
+dropdown.setDropdownExpanded(true)
+wait(1)
+dropdown.setSelected(3) --mango
+wait(2)
+dropdown.setOptions({"carrot", "rhubarb", "olive"})
 
-Section:Dropdown({
-    text = "Dropdown",
-    list = {"Apple", "Banana","Coconut"},
-    default = "Apple",
-    callback = function(String)
-        print(String)
-    end
+end
 })
-
-Section:Textbox({
-    text = "Textbox",
-    value = "Default",
-    callback = function(String)
-        print(String)
-    end
-})
-
-Section:Colorpicker({
-    text = "Colorpicker",
-    color = Color3.new(1,1,1),
-    callback = function(HSV)
-        print(HSV)
-    end
-})
-
---[[
-    blacklisted keybind:
-        Return
-        Space
-        Tab
-        W,A,S,D,I,O
-        Unknown
-]]
-
-Section:Keybind({
-    text = "Keybind",
-    default = Enum.KeyCode.Z,
-    callback = function(defaultBind)
-        print("Triggered keybind")
-        print(defaultBind)
-    end
-})
+end
+end
+local TabTwo = UI:AddTab("Second tab", "some other things")
