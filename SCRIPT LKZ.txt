@@ -66,48 +66,53 @@ Section1:Toggle({
 end)
 
 Section1:Button({
-  Title = "Kill All",
-  ButtonName = "KILL!!",
-  Description = "kills everyone",
+    Title = "Kill All",
+    ButtonName = "KILL!!",
+    Description = "kills everyone",
 }, function(value)
-  print(value)
+    print(value)
 end)
+
 Section1:Toggle({
-  Title = "Auto Farm Coins",
-  Description = "Optional Description here",
-  Default = false
+    Title = "Auto Farm Coins",
+    Description = "Optional Description here",
+    Default = false
 }, function(value)
-  print(value)
+    print(value)
 end)
+
 Section1:Slider({
-  Title = "Walkspeed",
-  Description = "",
-  Default = 16,
-  Min = 0,
-  Max = 120
+    Title = "Walkspeed",
+    Description = "",
+    Default = 16,
+    Min = 0,
+    Max = 120
 }, function(value)
-  print(value)
+    print(value)
 end)
+
 Section1:ColorPicker({
-  Title = "Colorpicker",
-  Description = "",
-  Default = Color3.new(255, 0, 0),
+    Title = "Colorpicker",
+    Description = "",
+    Default = Color3.new(255, 0, 0),
 }, function(value)
-  print(value)
+    print(value)
 end)
+
 Section1:Textbox({
-  Title = "Damage Multiplier",
-  Description = "",
-  Default = "",
+    Title = "Damage Multiplier",
+    Description = "",
+    Default = "",
 }, function(value)
-  print(value)
+    print(value)
 end)
+
 Section1:Keybind({
-  Title = "Kill All",
-  Description = "",
-  Default = Enum.KeyCode.Q,
+    Title = "Kill All",
+    Description = "",
+    Default = Enum.KeyCode.Q,
 }, function(value)
-  print(value)
+    print(value)
 end)
 
 -- Minimize Button
