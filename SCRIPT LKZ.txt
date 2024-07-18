@@ -1,15 +1,25 @@
-local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
+-- Script para destacar todos os jogadores em um jogo do Roblox
+local Players = game:GetService("Players")
+local Highlight = Instance.new("Highlight")
+Highlight.FillColor = Color3.fromRGB(0, 0, 255) -- Cor amarela
+Highlight.FillTransparency = 0.5 -- Semitransparente
+Highlight.OutlineColor = Color3.fromRGB(0, 0, 0) -- Contorno branco
 
-OrionLib:MakeNotification({
-    Name = "Orion Example",
-    Content = "Orion Example",
-    Image = "rbxassetid://4483345998",
-    Time = 5
-})
+-- Loop através de todos os jogadores
+for _, player in pairs(Players:GetPlayers()) do
+    local character = player.Character
+    if character then
+        -- Adicione o destaque ao personagem do jogador
+        Highlight:Clone().Parent = character
+    end
+end
+
+-- Crie uma janela com uma aba e um botão
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 
 local Window = OrionLib:MakeWindow({Name = "Orion Example", HidePremium = false, SaveConfig = true, ConfigFolder = "Orion"})
 
--- Player Tab --
+-- Aba de Jogador
 local PlayerTab = Window:MakeTab({
     Name = "Player",
     Icon = "rbxassetid://4483345998",
@@ -32,9 +42,8 @@ PlayerSection:AddSlider({
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
     end
 })
--- Player Tab End --
 
--- Settings Tab --
+-- Aba de Configurações
 local SettingsTab = Window:MakeTab({
     Name = "Settings",
     Icon = "rbxassetid://4483345998",
@@ -51,58 +60,5 @@ SettingsSection:AddButton({
         OrionLib:Destroy()
     end
 })
--- Settings Tab End --
 
--- Highlight Players Tab --
-local HighlightTab = Window:MakeTab({
-    Name = "Highlight",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
-local HighlightSection = HighlightTab:AddSection({
-    Name = "Highlight All Players"
-})
-
-local highlightedPlayers = {}
-
-HighlightSection:AddButton({
-    Name = "Highlight All",
-    Callback = function()
-        for _, player in ipairs(game.Players:GetPlayers()) do
-            if player ~= game.Players.LocalPlayer then
-                local character = player.Character
-                if character then
-                    local humanoid = character:FindFirstChildOfClass("Humanoid")
-                    if humanoid then
-                        -- Create a SelectionBox to highlight the player's torso
-                        local highlightBox = Instance.new("SelectionBox")
-                        highlightBox.Adornee = character:WaitForChild("HumanoidRootPart")
-                        highlightBox.Color3 = Color3.new(0, 1, 0) -- Green color (you can adjust the color as needed)
-                        highlightBox.LineThickness = 0.05
-                        highlightBox.Parent = character
-                        table.insert(highlightedPlayers, highlightBox)
-                    end
-                end
-            end
-        end
-    end
-})
-
--- Function to remove all highlights
-local function clearHighlights()
-    for _, box in ipairs(highlightedPlayers) do
-        box:Destroy()
-    end
-    highlightedPlayers = {}
-end
-
-HighlightSection:AddButton({
-    Name = "Clear Highlight",
-    Callback = function()
-        clearHighlights()
-    end
-})
--- Highlight Players Tab End --
-
-OrionLib:Init() -- Finaliza a inicialização da UI Lib
+OrionLib:Init() -- Inicialize a interface do usuário
