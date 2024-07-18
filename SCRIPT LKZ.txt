@@ -5,7 +5,7 @@ local Camera = game:GetService("Workspace").CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
 -- Variável para ativar/desativar ESP
-local espEnabled = true
+local espEnabled = false
 
 -- Função para criar ESP
 local function createESP(player)
@@ -22,13 +22,13 @@ local function createESP(player)
     Line.Thickness = 2
     
     local function Update()
-        while player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player ~= LocalPlayer and espEnabled do
+        while player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player ~= LocalPlayer do
             local HumanoidRootPart = player.Character.HumanoidRootPart
             local RootPartPosition, onScreen = Camera:WorldToViewportPoint(HumanoidRootPart.Position)
             local HeadPosition = Camera:WorldToViewportPoint(HumanoidRootPart.Position + Vector3.new(0, 3, 0))
             local LegPosition = Camera:WorldToViewportPoint(HumanoidRootPart.Position - Vector3.new(0, 3, 0))
             
-            if onScreen then
+            if espEnabled and onScreen then
                 Box.Size = Vector2.new(2000 / RootPartPosition.Z, 4000 / RootPartPosition.Z)
                 Box.Position = Vector2.new(RootPartPosition.X - Box.Size.X / 2, RootPartPosition.Y - Box.Size.Y / 2)
                 Box.Visible = true
@@ -61,7 +61,8 @@ end
 
 -- Função para alternar ESP
 local function toggleESP()
-    if espEnabled then
+    espEnabled = not espEnabled
+    if not espEnabled then
         for _, drawing in pairs(Drawing.GetChildren()) do
             if drawing:IsA("Square") or drawing:IsA("Line") then
                 drawing:Remove()
@@ -83,7 +84,7 @@ local Section1 = SubButton1:Section("Section", "Left")
 Section1:Toggle({
     Title = "ESP",
     Description = "Enable or disable ESP",
-    Default = true,
+    Default = false,
 }, function(value)
     espEnabled = value
     toggleESP()
@@ -151,7 +152,17 @@ local function toggleMenu()
     end
 end
 
-Category1:Button("Minimize", "http://www.roblox.com/asset/?id=8395747586", function()
+-- Botão de minimizar no canto superior direito
+local MinimizeButton = Instance.new("TextButton")
+MinimizeButton.Text = "_"
+MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
+MinimizeButton.Position = UDim2.new(1, -35, 0, 5)
+MinimizeButton.TextSize = 14
+MinimizeButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+MinimizeButton.TextColor3 = Color3.new(1, 1, 1)
+MinimizeButton.Parent = Window.UI
+
+MinimizeButton.MouseButton1Click:Connect(function()
     toggleMenu()
 end)
 
