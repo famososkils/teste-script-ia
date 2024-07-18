@@ -13,6 +13,10 @@ local Tab2 = Window:Tab({
     Text = "Visual"
 })
 
+local Tab3 = Window:Tab({
+    Text = "Player"
+})
+
 local ChamsSection = Tab2:Section({
     Text = "Chams"
 })
