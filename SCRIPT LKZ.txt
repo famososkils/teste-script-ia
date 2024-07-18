@@ -22,13 +22,13 @@ local function createESP(player)
     Line.Thickness = 2
     
     local function Update()
-        while player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player ~= LocalPlayer do
+        while player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player ~= LocalPlayer and espEnabled do
             local HumanoidRootPart = player.Character.HumanoidRootPart
             local RootPartPosition, onScreen = Camera:WorldToViewportPoint(HumanoidRootPart.Position)
             local HeadPosition = Camera:WorldToViewportPoint(HumanoidRootPart.Position + Vector3.new(0, 3, 0))
             local LegPosition = Camera:WorldToViewportPoint(HumanoidRootPart.Position - Vector3.new(0, 3, 0))
             
-            if espEnabled and onScreen then
+            if onScreen then
                 Box.Size = Vector2.new(2000 / RootPartPosition.Z, 4000 / RootPartPosition.Z)
                 Box.Position = Vector2.new(RootPartPosition.X - Box.Size.X / 2, RootPartPosition.Y - Box.Size.Y / 2)
                 Box.Visible = true
@@ -50,19 +50,47 @@ local function createESP(player)
     coroutine.wrap(Update)()
 end
 
+-- Função para criar efeito nos pés do jogador
+local function createFootEffect(player)
+    local character = player.Character
+    if not character then return end
+
+    local humanoid = character:FindFirstChild("Humanoid")
+    if not humanoid then return end
+
+    local rootPart = humanoid.RootPart
+    if not rootPart then return end
+
+    local footPosition = rootPart.Position + Vector3.new(0, -humanoid.HipHeight / 2, 0)
+    local footOnScreen, screenPos = Camera:WorldToViewportPoint(footPosition)
+
+    if footOnScreen then
+        local size = Vector2.new(30, 30) -- ajustar tamanho conforme necessário
+        local effect = Drawing.new("Rectangle")
+        effect.Position = screenPos - size / 2
+        effect.Size = size
+        effect.Color = Color3.fromRGB(0, 255, 0) -- ajustar cor conforme necessário (verde para indicador de amigo)
+        effect.Visible = true
+
+        -- Opcional: Mostrar brevemente o efeito
+        RunService.Heartbeat:Wait(1) -- ajustar duração conforme necessário
+        effect:Remove()
+    end
+end
+
 -- Função para atualizar ESP
 local function updateESP()
     for _, player in pairs(Players:GetPlayers()) do
         if player ~= LocalPlayer and player.Character then
             createESP(player)
+            createFootEffect(player)
         end
     end
 end
 
 -- Função para alternar ESP
 local function toggleESP()
-    espEnabled = not espEnabled
-    if not espEnabled then
+    if espEnabled then
         for _, drawing in pairs(Drawing.GetChildren()) do
             if drawing:IsA("Square") or drawing:IsA("Line") then
                 drawing:Remove()
@@ -152,17 +180,7 @@ local function toggleMenu()
     end
 end
 
--- Botão de minimizar no canto superior direito
-local MinimizeButton = Instance.new("TextButton")
-MinimizeButton.Text = "_"
-MinimizeButton.Size = UDim2.new(0, 30, 0, 30)
-MinimizeButton.Position = UDim2.new(1, -35, 0, 5)
-MinimizeButton.TextSize = 14
-MinimizeButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
-MinimizeButton.TextColor3 = Color3.new(1, 1, 1)
-MinimizeButton.Parent = Window.UI
-
-MinimizeButton.MouseButton1Click:Connect(function()
+Category1:Button("Minimize", "http://www.roblox.com/asset/?id=8395747586", function()
     toggleMenu()
 end)
 
@@ -173,7 +191,8 @@ updateESP()
 game.Players.PlayerAdded:Connect(function(newPlayer)
     newPlayer.CharacterAdded:Connect(function(character)
         if espEnabled then
-            createESP(character)
+            createESP(newPlayer)
+            createFootEffect(newPlayer)
         end
     end)
 end)
