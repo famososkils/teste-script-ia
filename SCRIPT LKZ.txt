@@ -66,66 +66,30 @@ local HighlightSection = HighlightTab:AddSection({
 
 local highlightedPlayers = {}
 
--- Função para criar e destacar um jogador com opções de personalização
-local function highlightPlayer(player, color, thickness, filled)
-    if player ~= game.Players.LocalPlayer then
-        local character = player.Character
-        if character then
-            local humanoid = character:FindFirstChildOfClass("Humanoid")
-            if humanoid then
-                -- Criar um SelectionBox personalizado
-                local highlightBox = Instance.new("SelectionBox")
-                highlightBox.Adornee = character:WaitForChild("HumanoidRootPart")
-
-                -- Opções de personalização
-                highlightBox.Color3 = color or Color3.new(0, 1, 0) -- Cor padrão: verde
-                highlightBox.LineThickness = thickness or 0.05 -- Espessura padrão da linha
-                highlightBox.SurfaceTransparency = filled and 0 or 1 -- Preenchimento opcional
-
-                highlightBox.Parent = character
-                table.insert(highlightedPlayers, highlightBox)
-            end
-        end
-    end
-end
-
-HighlightSection:AddColorPicker({
-    Name = "Highlight Color",
-    Default = Color3.fromRGB(0, 255, 0), -- Cor verde padrão
-    Callback = function(color)
-        highlightColor = color
-    end
-})
-
-HighlightSection:AddSlider({
-    Name = "Line Thickness",
-    Min = 0.01,
-    Max = 0.1,
-    Default = 0.05,
-    ValueName = "Thickness",
-    Callback = function(value)
-        highlightThickness = value
-    end
-})
-
-HighlightSection:AddToggle({
-    Name = "Fill Box",
-    Default = false,
-    Callback = function(enabled)
-        highlightFilled = enabled
-    end
-})
-
 HighlightSection:AddButton({
     Name = "Highlight All",
     Callback = function()
         for _, player in ipairs(game.Players:GetPlayers()) do
-            highlightPlayer(player, highlightColor, highlightThickness, highlightFilled)
+            if player ~= game.Players.LocalPlayer then
+                local character = player.Character
+                if character then
+                    local humanoid = character:FindFirstChildOfClass("Humanoid")
+                    if humanoid then
+                        -- Create a SelectionBox to highlight the player's torso
+                        local highlightBox = Instance.new("SelectionBox")
+                        highlightBox.Adornee = character:WaitForChild("HumanoidRootPart")
+                        highlightBox.Color3 = Color3.new(0, 1, 0) -- Green color (you can adjust the color as needed)
+                        highlightBox.LineThickness = 0.05
+                        highlightBox.Parent = character
+                        table.insert(highlightedPlayers, highlightBox)
+                    end
+                end
+            end
         end
     end
 })
 
--- Função para limpar todos os destaques
+-- Function to remove all highlights
 local function clearHighlights()
     for _, box in ipairs(highlightedPlayers) do
         box:Destroy()
