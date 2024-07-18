@@ -33,7 +33,7 @@ local function createESP(player)
                 Box.Position = Vector2.new(RootPartPosition.X - Box.Size.X / 2, RootPartPosition.Y - Box.Size.Y / 2)
                 Box.Visible = true
                 
-                Line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
+                Line.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
                 Line.To = Vector2.new(RootPartPosition.X, RootPartPosition.Y)
                 Line.Visible = true
             else
@@ -61,15 +61,14 @@ end
 
 -- Função para alternar ESP
 local function toggleESP()
-    espEnabled = not espEnabled
     if espEnabled then
-        updateESP()
-    else
         for _, drawing in pairs(Drawing.GetChildren()) do
             if drawing:IsA("Square") or drawing:IsA("Line") then
                 drawing:Remove()
             end
         end
+    else
+        updateESP()
     end
 end
 
