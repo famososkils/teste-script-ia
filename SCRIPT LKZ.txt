@@ -1,0 +1,111 @@
+local player = game.Players.LocalPlayer
+local espEnabled = true
+local teamColors = {
+  [player.Team.Name] = Color3.new(0, 1, 0),   -- Verde para o seu time
+  -- Adicione outras cores para diferentes times aqui
+}
+
+local function createESP(character)
+  local esp = Instance.new("BillboardGui")
+  esp.Adornee = character:FindFirstChild("Head")
+  esp.Size = UDim2.new(0, 100, 0, 20)
+  esp.StudsOffset = Vector3.new(0, 2, 0)
+  esp.AlwaysOnTop = true
+
+  local label = Instance.new("TextLabel")
+  label.Parent = esp
+  label.Size = UDim2.new(1, 0, 1, 0)
+  label.BackgroundTransparency = 1
+  label.Text = character.Name
+  label.TextColor3 = teamColors[character.Team.Name] or Color3.new(1, 1, 1)   -- Branco para outros jogadores
+  label.Font = Enum.Font.SourceSansBold
+  label.TextSize = 14
+
+  esp.Parent = game.CoreGui
+end
+
+local function updateESP()
+  for _, playerCharacter in pairs(game.Players:GetPlayers()) do
+    if playerCharacter ~= player and playerCharacter.Character then
+      createESP(playerCharacter.Character)
+    end
+  end
+end
+
+local function toggleESP()
+  espEnabled = not espEnabled
+  if espEnabled then
+    updateESP()
+  else
+    for _, esp in pairs(game.CoreGui:GetChildren()) do
+      if esp:IsA("BillboardGui") then
+        esp:Destroy()
+      end
+    end
+  end
+end
+
+-- UI Library Integration
+local UILib = loadstring(game:HttpGet('https://raw.githubusercontent.com/StepBroFurious/Script/main/HydraHubUi.lua'))()
+local Window = UILib.new("Grand Piece Online", game.Players.LocalPlayer.UserId, "Buyer")
+local Category1 = Window:Category("Main", "http://www.roblox.com/asset/?id=8395621517")
+local SubButton1 = Category1:Button("Combat", "http://www.roblox.com/asset/?id=8395747586")
+local Section1 = SubButton1:Section("Section", "Left")
+
+-- ESP Toggle Button
+Section1:Toggle({
+  Title = "ESP",
+  Description = "Enable or disable ESP",
+  Default = true,
+}, function(value)
+  espEnabled = value
+  toggleESP()
+end)
+
+Section1:Button({
+  Title = "Kill All",
+  ButtonName = "KILL!!",
+  Description = "kills everyone",
+}, function(value)
+  print(value)
+end)
+Section1:Toggle({
+  Title = "Auto Farm Coins",
+  Description = "Optional Description here",
+  Default = false
+}, function(value)
+  print(value)
+end)
+Section1:Slider({
+  Title = "Walkspeed",
+  Description = "",
+  Default = 16,
+  Min = 0,
+  Max = 120
+}, function(value)
+  print(value)
+end)
+Section1:ColorPicker({
+  Title = "Colorpicker",
+  Description = "",
+  Default = Color3.new(255, 0, 0),
+}, function(value)
+  print(value)
+end)
+Section1:Textbox({
+  Title = "Damage Multiplier",
+  Description = "",
+  Default = "",
+}, function(value)
+  print(value)
+end)
+Section1:Keybind({
+  Title = "Kill All",
+  Description = "",
+  Default = Enum.KeyCode.Q,
+}, function(value)
+  print(value)
+end)
+
+-- Initialize ESP
+updateESP()
