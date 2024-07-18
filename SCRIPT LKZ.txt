@@ -1,25 +1,46 @@
 -- Script para destacar todos os jogadores em um jogo do Roblox
 local Players = game:GetService("Players")
-local Highlight = Instance.new("Highlight")
-Highlight.FillColor = Color3.fromRGB(0, 0, 255) -- Cor amarela
-Highlight.FillTransparency = 0.5 -- Semitransparente
-Highlight.OutlineColor = Color3.fromRGB(0, 0, 0) -- Contorno branco
+local Highlight = Instance.new("SelectionBox")
+Highlight.Color3 = Color3.fromRGB(0, 0, 255) -- Cor azul
+Highlight.LineThickness = 0.05 -- Espessura da linha
 
--- Loop através de todos os jogadores
-for _, player in pairs(Players:GetPlayers()) do
-    local character = player.Character
-    if character then
-        -- Adicione o destaque ao personagem do jogador
-        Highlight:Clone().Parent = character
+-- Função para destacar todos os jogadores
+local function highlightAllPlayers(enabled)
+    if enabled then
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= Players.LocalPlayer then
+                local character = player.Character
+                if character then
+                    local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+                    if humanoidRootPart then
+                        local highlightBox = Highlight:Clone()
+                        highlightBox.Adornee = humanoidRootPart
+                        highlightBox.Parent = character
+                    end
+                end
+            end
+        end
+        print("ESP ativado! Todos os jogadores estão destacados.")
+    else
+        for _, player in pairs(Players:GetPlayers()) do
+            local character = player.Character
+            if character then
+                for _, child in ipairs(character:GetChildren()) do
+                    if child:IsA("SelectionBox") then
+                        child:Destroy()
+                    end
+                end
+            end
+        end
+        print("ESP desativado! Destaques removidos.")
     end
 end
 
--- Crie uma janela com uma aba e um botão
+-- Cria uma janela com uma aba e um botão usando OrionLib
 local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
-
 local Window = OrionLib:MakeWindow({Name = "Orion Example", HidePremium = false, SaveConfig = true, ConfigFolder = "Orion"})
 
--- Aba de Jogador
+-- Aba Jogador
 local PlayerTab = Window:MakeTab({
     Name = "Player",
     Icon = "rbxassetid://4483345998",
@@ -39,22 +60,12 @@ PlayerSection:AddSlider({
     Increment = 1,
     ValueName = "Walkspeed",
     Callback = function(Value)
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+        Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
     end
 })
 
--- Adicione esta parte ao seu código existente
-
--- Crie uma janela com uma aba ESP
-local ESPWindow = OrionLib:MakeWindow({
-    Name = "ESP",
-    HidePremium = false,
-    SaveConfig = true,
-    ConfigFolder = "Orion"
-})
-
 -- Aba ESP
-local ESPTab = ESPWindow:MakeTab({
+local ESPTab = Window:MakeTab({
     Name = "ESP",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
@@ -64,26 +75,18 @@ local ESPSection = ESPTab:AddSection({
     Name = "ESP Settings"
 })
 
--- Adicione um botão para ativar/desativar o ESP
 local ESPEnabled = false
 
-ESPSection:AddButton({
-    Name = "Toggle ESP",
-    Callback = function()
-        ESPEnabled = not ESPEnabled
-        -- Lógica para ativar/desativar o ESP aqui
-        if ESPEnabled then
-            print("ESP ativado!")
-            -- Adicione o código para destacar os elementos desejados
-        else
-            print("ESP desativado!")
-            -- Remova o destaque dos elementos
-        end
+ESPSection:AddToggle({
+    Name = "Enable ESP",
+    Default = false,
+    Callback = function(enabled)
+        ESPEnabled = enabled
+        highlightAllPlayers(enabled)
     end
 })
 
-
--- Aba de Configurações
+-- Aba Configurações
 local SettingsTab = Window:MakeTab({
     Name = "Settings",
     Icon = "rbxassetid://4483345998",
